@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Color Scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<!-- Load d3-annotation -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<select name="" id="fromCountry" ></select>
+<select name="" id="fromCountry2"></select>
+<select name="" id="fromCountry3"></select>
+
+
+<script>
+
+
+
+
+
+
+
+// set the dimensions and margins of the graph
+var margin = {top: 100, right: 80, bottom: 100, left: 80},
+    width = 760 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+          
+
+//Read the data
+d3.csv("https://raw.githubusercontent.com/RebelWyvern/database/master/escolarizaçãoP1.csv", function(data) {
+
+  // group the data: I want to draw one line per group
+  var aux2;
+  var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d){ return d.Entity;})
+    .entries(data);
+
+    //console.log("key: "+sumstat[0].key)
+
+    d3.select("#fromCountry")
+      .selectAll('myOptions')
+     	.data(sumstat)
+      .enter()
+    	.append('option')
+      .text(function (d) { return d.key; }) // text showed in the menu
+      .attr("value", function (d) { return d.key; }) // corresponding value returned by the button
+
+
+      d3.select("#fromCountry2")
+      .selectAll('myOptions')
+     	.data(sumstat)
+      .enter()
+    	.append('option')
+      .text(function (d) { return d.key; }) // text showed in the menu
+      .attr("value", function (d) { return d.key; }) // corresponding value returned by the button
+
+
+      d3.select("#fromCountry3")
+      .selectAll('myOptions')
+     	.data(sumstat)
+      .enter()
+    	.append('option')
+      .text(function (d) { return d.key; }) // text showed in the menu
+      .attr("value", function (d) { return d.key; }) // corresponding value returned by the button
+
+
+      
+
+
+    // This allows to find the closest X index of the mouse:
+ 
+  // Add X axis --> it is a date format
+  var x = d3.scaleLinear()
+    .domain([1970,2020])
+    .range([ 0, width ]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).ticks(5));
+    svg.append("text")      // text label for the x axis
+        .attr("x", width/2 )
+        .attr("y",450)
+        .style("text-anchor", "middle")
+        .text("Ano(1970-2020)");
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, d3.max(data, function(d) { return +d.GDP; })])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -50)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Gastos do governo com educação em %");
+
+  // color palette
+  var res = sumstat.map(function(d){ return d.key }) // list of group names
+    var color = d3.scaleOrdinal()
+      .domain(res)
+      .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
+    
+    var Tooltip = d3.select("#my_dataviz")
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("position", "absolute")
+      .style("padding", "5px")
+      
+      
+      // Three function that change the tooltip when user hover / move / leave a cell
+      var mouseover = function(d) {
+        Tooltip
+          .style("opacity", 1)
+          
+      }
+      var mousemove = function(d) {
+        Tooltip
+          .html("gastos: " + Math.round(d.GDP)+"%" +"\r\n"+"Ano: "+d.Year +"\r\n"+"País: "+d.Entity)
+          .style("left", (d3.mouse(this)[0]+70) + "px")
+          .style("top", (d3.mouse(this)[1]) + "px")
+          
+          
+      }
+      var mouseleave = function(d) {
+        Tooltip
+          .style("opacity", 0)
+         // .attr("fill", "#69b3a2")
+      }
+      var aux;
+      var i=0;
+      while(i<4)
+      {
+      // aqui printa cada grupo    
+     // console.log("grupo: "+i+sumstat[i].key)
+      //aqui printa a coluna dos numeros de cada grupo
+    //  console.log("numero: "+sumstat[i].values[i].number)
+     
+      i++
+      }
+
+      //console.log("pais"+aux);
+
+
+      //console.log("peguei: "+team.key)  
+
+
+      var line=svg
+      .selectAll(".line")
+      .data(sumstat)
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){ if(d.key == 'Afghanistan')
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(+d.GDP); })
+            (d.values) 
+        })
+       
+
+        var line2=svg
+      .selectAll(".line")
+      .data(sumstat)
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){ if(d.key == 'Africa Eastern and Southern')
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(+d.GDP); })
+            (d.values) 
+        })
+
+        var line3=svg
+      .selectAll(".line")
+      .data(sumstat)
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){ if(d.key == 'Africa Western and Central')
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(+d.GDP); })
+            (d.values) 
+        })
+
+
+        var size = 10  
+      var  v = svg.selectAll(".mylabels")
+  .data(sumstat)
+
+  v
+  .enter()
+  .append("text")
+  .attr("class","myLabels")
+    .attr("x", -70)
+    .attr("y", function(d,i){ return -80 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ if(d.key == 'Afghanistan'|| d.key == 'Africa Eastern and Southern'||d.key == 'Africa Western and Central') return d.key})
+    .attr("text-anchor", "right")
+    .style("alignment-baseline", "top")
+
+    
+    var dot1 = svg
+      // First we need to enter in a group
+      .selectAll("myDots")
+      .data(sumstat)
+      .enter()
+        .append('g')
+        
+      // Second we need to enter in the 'values' part of this group
+      .selectAll("myPoints")
+      .data(function(d){ return d.values })
+      .enter()
+      .append("circle")
+      .style("fill", "white")
+        .attr("cx", function(d) { return x(d.Year) } )
+        .attr("cy", function(d) { return y(d.GDP) } )
+        .attr("r", 0.5)
+        .attr("stroke", "white")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+
+function update(selectedGroup) {
+
+// Create new data with the selection?
+
+  
+line
+.data(sumstat)
+.transition()
+.duration(1000)
+        .attr("d", function(d){ if(d.key == selectedGroup)
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) {return y(+d.GDP); })
+            (d.values) 
+        })
+
+        v
+  .enter()
+  .append("text")
+  .attr("class","myLabels")
+    .attr("x", -70)
+    .attr("y", function(d,i){ return -80 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ if(d.key == selectedGroup && d.key != 'Afghanistan'&& d.key != 'Africa Eastern and Southern'&& d.key != 'Africa Western and Central') return d.key})
+    .attr("text-anchor", "right")
+    .style("alignment-baseline", "top")
+
+ 
+}
+
+function update2(selectedGroup) {
+
+// Create new data with the selection?
+
+  
+line2
+.data(sumstat)
+.transition()
+.duration(1000)
+        .attr("d", function(d){ if(d.key == selectedGroup)
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) {return y(+d.GDP); })
+            (d.values) 
+        })
+
+        v
+  .enter()
+  .append("text")
+  .attr("class","myLabels")
+    .attr("x", -70)
+    .attr("y", function(d,i){ return -80 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ if(d.key == selectedGroup && d.key != 'Afghanistan'&& d.key != 'Africa Eastern and Southern'&& d.key != 'Africa Western and Central') return d.key})
+    .attr("text-anchor", "right")
+    .style("alignment-baseline", "top")
+ 
+
+}
+
+function update3(selectedGroup) {
+
+// Create new data with the selection?
+
+  
+line3
+.data(sumstat)
+.transition()
+.duration(1000)
+        .attr("d", function(d){ if(d.key == selectedGroup)
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) {return y(+d.GDP); })
+            (d.values) 
+        })
+
+        v
+  .enter()
+  .append("text")
+  .attr("class","myLabels")
+    .attr("x", -70)
+    .attr("y", function(d,i){ return -80 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ if(d.key == selectedGroup && d.key != 'Afghanistan'&& d.key != 'Africa Eastern and Southern'&& d.key != 'Africa Western and Central') return d.key})
+    .attr("text-anchor", "right")
+    .style("alignment-baseline", "top")
+
+
+}
+        
+d3.select("#fromCountry").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+        // run the updateChart function with this selected option
+        update(selectedOption)
+    })
+    d3.select("#fromCountry2").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+        // run the updateChart function with this selected option
+        update2(selectedOption)
+    })
+    d3.select("#fromCountry3").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+        // run the updateChart function with this selected option
+        update3(selectedOption)
+    })
+        
+
+})
+
+
+
+</script>
