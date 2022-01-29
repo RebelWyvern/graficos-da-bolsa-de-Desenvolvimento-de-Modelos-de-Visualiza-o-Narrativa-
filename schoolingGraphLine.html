@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<!-- Color Scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<!-- Add 2 buttons -->
+<div>
+  <label for="var">Escolha com quais dados o grafico deve ser gerado:</label>
+  <select name="var" id="var" onclick="update(value)">
+    <option value = 0 >escolarização Geral</option>
+    <option value = 1>Escolarização de Mulheres</option>
+    <option value = 2 >Escolarização de Homens</option>
+    
+  
+  </select>
+ 
+  
+</form>
+<div id="my_dataviz"></div>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+
+
+<script>
+var margin = {top: 50, right: 30, bottom: 30, left: 50},
+    width = 400 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Initialise a X axis:
+var x = d3.scaleLinear().range([0,width]);
+var xAxis = d3.axisBottom().scale(x);
+svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .attr("class","myXaxis")
+
+// Initialize an Y axis
+var y = d3.scaleLinear().range([height, 0]);
+var yAxis = d3.axisLeft().scale(y);
+svg.append("g")
+  .attr("class","myYaxis")
+  
+
+function update(selectedData) {
+
+var u;
+var res;
+var color;
+var v;
+var size = 20
+
+
+
+if(selectedData == 0)
+{  
+    d3.csv("https://raw.githubusercontent.com/RebelWyvern/database/master/schoolingdataset.csv", function(data) {
+        var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d){return d.Entity;})
+    .entries(data);
+
+    x.domain(d3.extent(data, function(d) { return d.Year; }));
+  svg.selectAll(".myXaxis").transition()
+    .duration(3000)
+    .call(xAxis.ticks(5));
+    svg.append("text")      // text label for the x axis
+        .attr("x", width/2 )
+        .attr("y", height+margin.bottom)
+        .style("text-anchor", "middle")
+        .text("Ano");
+
+  // create the Y axis
+  y.domain([0, d3.max(data, function(d) { return +d.SchoolTime; })]);
+  svg.selectAll(".myYaxis")
+    .transition()
+    .duration(3000)
+    .call(yAxis);
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0-margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Media de escolarização");
+
+    res = sumstat.map(function(d){ return d.key }) // list of group names
+  color = d3.scaleOrdinal()
+    .domain(res)
+    .range(d3.schemeSet2)
+   
+    u = svg.selectAll(".line")
+        .data(sumstat)
+
+    u
+    .enter()
+    .append("path")
+    .attr("class","line")
+    .merge(u)
+    .transition()
+    .duration(3000)
+    .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(+d.SchoolTime); })
+            (d.values)
+        })
+
+       
+        
+
+// Add one dot in the legend for each name.
+v = svg.selectAll(".mylabels")
+  .data(sumstat)
+
+  v
+  .enter()
+  .append('g')
+  .append("text")
+  .attr("class","myLabels")
+    .merge(u)
+    .transition()
+    .duration(3000)
+    .attr("x", 30)
+    .attr("y", function(d,i){ return 5 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ return d.key})
+    .attr("text-anchor", "right")
+    .style("alignment-baseline", "top")
+                            
+    
+    })
+
+    
+}
+if(selectedData == 1)
+{ 
+  d3.csv("https://raw.githubusercontent.com/RebelWyvern/database/master/schoolfemaledataSet.csv", function(data) {
+        var sumstat2 = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d){return d.Entity;})
+    .entries(data);
+
+    x.domain(d3.extent(data, function(d) { return d.Year; }));
+  svg.selectAll(".myXaxis").transition()
+    .duration(3000)
+    .call(xAxis.ticks(5));
+    svg.append("text")      // text label for the x axis
+        .attr("x", width/2 )
+        .attr("y", height+margin.bottom)
+        .style("text-anchor", "middle")
+        .text("Ano");
+
+  // create the Y axis
+  y.domain([0, d3.max(data, function(d) { return +d.SchoolTime; })]);
+  svg.selectAll(".myYaxis")
+    .transition()
+    .duration(3000)
+    .call(yAxis);
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0-margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Media de escolarização");
+
+    res = sumstat2.map(function(d){ return d.key }) // list of group names
+  color = d3.scaleOrdinal()
+    .domain(res)
+    .range(d3.schemeSet2)
+    
+    u = svg.selectAll(".line")
+        .data(sumstat2)
+
+    u
+    .enter()
+    .append("path")
+    .attr("class","line")
+    .merge(u)
+    .transition()
+    .duration(3000)
+    .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(+d.SchoolTime); })
+            (d.values)
+        })
+
+  v = svg.selectAll(".mylabels")
+  .data(sumstat2)
+
+  v
+  .enter()
+  .append('g')
+  .append("text")
+  .attr("class","myLabels")
+    .merge(u)
+    .transition()
+    .duration(3000)
+    .attr("x", 30)
+    .attr("y", function(d,i){ return 5 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ return d.key})
+    .attr("text-anchor", "ight")
+    .style("alignment-baseline", "top")
+
+
+    
+    })
+
+    
+}
+else if(selectedData == 2)
+{
+  d3.csv("https://raw.githubusercontent.com/RebelWyvern/database/master/SchoolmaleDataset.csv", function(data) {
+        var sumstat3 = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d){return d.Entity;})
+    .entries(data);
+
+    x.domain(d3.extent(data, function(d) { return d.Year; }));
+  svg.selectAll(".myXaxis").transition()
+    .duration(3000)
+    .call(xAxis.ticks(5));
+    svg.append("text")      // text label for the x axis
+        .attr("x", width/2 )
+        .attr("y", height+margin.bottom)
+        .style("text-anchor", "middle")
+        .text("Ano");
+
+  // create the Y axis
+  y.domain([0, d3.max(data, function(d) { return +d.SchoolTime; })]);
+  svg.selectAll(".myYaxis")
+    .transition()
+    .duration(3000)
+    .call(yAxis);
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0-margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Media de escolarização");
+
+    res = sumstat3.map(function(d){ return d.key }) // list of group names
+  color = d3.scaleOrdinal()
+    .domain(res)
+    .range(d3.schemeSet2)
+    
+    u = svg.selectAll(".line")
+        .data(sumstat3)
+
+    u
+    .enter()
+    .append("path")
+    .attr("class","line")
+    .merge(u)
+    .transition()
+    .duration(3000)
+    .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){
+          return d3.line()
+            .x(function(d) { return x(d.Year); })
+            .y(function(d) { return y(+d.SchoolTime); })
+            (d.values)
+        })
+
+    })
+    v = svg.selectAll(".mylabels")
+  .data(sumstat2)
+
+  v
+  .enter()
+  .append('g')
+  .append("text")
+  .attr("class","myLabels")
+    .merge(u)
+    .transition()
+    .duration(3000)
+    .attr("x", 30)
+    .attr("y", function(d,i){ return 5 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d.key)})
+    .text(function(d){ return d.key})
+    .attr("text-anchor", "ight")
+    .style("alignment-baseline", "top")
+}
+
+	console.log("cheguei aqui")
+
+    
+    
+    d3.selectAll(".myLabels").remove().exit()
+
+  }
+</script>  

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - BS 4 Tabs and Pills and D3.js</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css'><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="container"
+<div class="row row-content">
+                <ul class="nav nav-tabs">
+                    
+                    <li class="nav-items">
+                        <a class="nav-link active" href="#tab1" role="tab" data-toggle="tab">
+                            Introdução
+                        </a>
+                    </li>
+                    <li class="nav-items">
+                        <a class="nav-link" href="#tab2" role="tab" data-toggle="tab">
+                            Dados Utilizados
+                        </a>
+                    </li>
+                    <li class="nav-items">
+                        <a class="nav-link" href="#tab3" role="tab" data-toggle="tab">
+                           Grafico de Linhas
+                        </a>
+                    </li>
+                    <li class="nav-items">
+                        <a class="nav-link" href="#tab4" role="tab" data-toggle="tab">
+                           Grafico de Barras
+                        </a>
+                    </li>
+                    
+                   
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade show active" id="tab1">
+                      
+                          <p style="font-size: 12px; text-align: justify; margin: 3%;">
+
+                            A educação é amplamente aceita como um recurso fundamental, 
+                            tanto para os indivíduos quanto para as sociedades. 
+                            Na verdade, na maioria dos países, 
+                            a educação básica é hoje percebida não apenas como um direito, 
+                            mas também como um dever - normalmente, 
+                            espera-se que os governos garantam o acesso à educação básica, 
+                            enquanto os cidadãos são frequentemente obrigados por lei a atingir a educação 
+                            até um determinado nível básico.
+                        </p>
+
+                        <p style="font-size: 12px;text-align: justify; margin: 3%;">
+                            Nesta entrada, começamos fornecendo uma visão geral das mudanças de longo 
+                            prazo nos resultados e produtos da educação em todo o mundo, com foco em medidas 
+                            de quantidade e qualidade de realização educacional; e, em seguida, fornecer uma 
+                            análise das evidências disponíveis sobre os determinantes e consequências da educação.                          
+                        </p>
+
+                        <p style="font-size: 12px;text-align: justify; margin: 3%;">
+
+                            Com relação às consequências da educação, 
+                            um número crescente de pesquisas empíricas sugere que uma 
+                            educação melhor gera uma renda individual mais alta e contribui 
+                            para a construção de capital social e o crescimento econômico de longo prazo.
+                        </p>
+                     
+                      
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tab2">
+                        <h3 style="font-size: medium; ">Descrição da Variavel: </h3><p style="font-size: 12px; text-align: justify; margin: 3%;" >
+                            Gastos do governo geral com educação (corrente, capital e transferências) 
+                            são expressos como uma porcentagem do PIB. Inclui despesas financiadas por
+                             transferências de fontes internacionais para o governo. O governo geral geralmente
+                              se refere aos governos local, regional e central.
+                        </p>
+
+                        <h3 style="font-size: medium; ">Limitações e exceções: </h3><p style="font-size: 12px; text-align: justify; margin: 3%;">
+                            Os dados podem referir-se apenas a gastos do ministério 
+                            da educação (excluindo gastos com atividades educacionais de outros ministérios).
+
+                        </p>
+                        
+                        
+                        <h3 style="font-size: medium;">Conceito e metodologia estatísticos::</h3><p style="font-size: 12px; text-align: justify; margin: 3%;">
+                            Gastos do governo com educação, total (% do PIB) é calculado dividindo-se o gasto do 
+                            governo em todos os níveis de educação pelo PIB e multiplicando por 100. Os dados
+                             agregados são baseados em estimativas do Banco Mundial.
+
+                        </p>
+
+                        <h3 style="font-size: medium;"></h3><p style="font-size: 12px; text-align: justify; margin: 3%;">
+                            Os dados sobre educação são coletados pelo Instituto de Estatística da UNESCO a partir de respostas 
+                            oficiais à sua pesquisa anual de educação. Todos os dados são mapeados para a Classificação 
+                            Internacional Padrão de Educação (CITE) para garantir a comparabilidade dos programas de educação 
+                            em nível internacional. A versão atual foi formalmente adotada pelos Estados Membros da UNESCO em 2011.
+                             Os dados do PIB vêm do Banco Mundial.
+
+                        </p>
+
+                        <h3 style="font-size: medium;">Sobre onde todos estes dados sairam:</h3><p style="font-size: 12px; text-align: justify; margin: 3%;">
+                            Os dados apresentados aqui são todos oferecido no site https://ourworldindata.org/global-education. 
+                         
+                      
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tab3">
+                        <h3 style="font-size: medium;">O seguinte grafico de linhas inclui alguns paises utilizados na pesquisa, a cor de cada nome na legenda corresponde ao país representado no grafico da cor correspondente:</h3>
+                        <svg id="my_dataviz" width="1000" height="900">
+
+                                    
+                        </svg>
+
+                        
+
+                        
+                        
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tab4">
+                        <h3 style="font-size: medium;">O seguinte grafico de Barras inclui alguns países utilizados na pesquisa no ano de 2015:</h3>
+                        <svg id="my_dataviz2" width="1000" height="900">
+
+                                    
+                        </svg>
+
+                        
+
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+       </div>
+</div>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.6.0/d3.js'></script><script  src="./script.js"></script>
+<!-- Load d3-annotation -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+</body>
+</html>
